@@ -107,7 +107,7 @@ def plot_clusters_2d(datas, labels, k):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--data", default="dataset/testdataset/tester11_1.txt")
+    ap.add_argument("--data", default="../dataset/testdataset/tester03_1.txt")
     ap.add_argument("--k", type=int, default=None, help="số cụm; bỏ trống = tự chọn từ elbow")
     ap.add_argument("--kmax", type=int, default=9)
     ap.add_argument("--n_mix", type=int, default=1, help="số mixture/state (chỉ dùng khi --init random)")
@@ -156,8 +156,24 @@ def main():
     print(" -> ".join(f"C{s + 1}x{n}" for s, n in runs))
 
     if gt is not None:
-        print("\nLabel gốc trong file (cột 4):")
-        print(", ".join(str(g) for g in gt))
+        print("\nNhãn thật trong từng đoạn GMM-HMM:")
+        start = 0
+        for segment_index, (state, length) in enumerate(runs, start=1):
+            end = start + length
+            segment_gt = gt[start:end]
+            values, counts = np.unique(segment_gt, return_counts=True)
+            distribution = ", ".join(
+                f"label {int(value)}: {int(count)} điểm"
+                for value, count in zip(values, counts)
+            )
+            labels_in_segment = ", ".join(str(int(value)) for value in values)
+            warning = " <-- CHỈ CÓ 2 NHÃN" if len(values) == 2 else ""
+            print(
+                f"Đoạn {segment_index}: C{state + 1}, "
+                f"index {start}:{end - 1}, {length} điểm | "
+                f"nhãn thật [{labels_in_segment}] | {distribution}{warning}"
+            )
+            start = end
 
     np.savetxt("round1_clusters.txt", labels + 1, fmt="%d")
     print("\nĐã lưu nhãn vào round1_clusters.txt")

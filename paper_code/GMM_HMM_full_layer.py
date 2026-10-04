@@ -390,7 +390,7 @@ def main():
     parser.add_argument(
         "--data",
         default=str(
-            Path(__file__).parent / "dataset" / "testdataset" / "tester11_1.txt"
+            Path(__file__).parent / "../dataset" / "testdataset" / "tester11_1.txt"
         ),
         help="Một file dữ liệu [x, y, v] hoặc [x, y, v, ground_truth].",
     )
